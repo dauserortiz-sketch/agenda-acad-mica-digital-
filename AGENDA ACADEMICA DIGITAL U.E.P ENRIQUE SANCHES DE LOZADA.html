@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda Escolar - Colegio Enrique Sánchez de Lozada</title>
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+    <!-- ==========================================
+         PANTALLA DE ACCESO / INGRESO
+         ========================================== -->
+    <div id="pantallaLogin" class="contenedor-login">
+        <div class="caja-login">
+            
+            <!-- Espacio para el Escudo del Colegio -->
+            <div class="logo-colegio-contenedor">
+                <img id="imgEscudoLogin" src="c:\Users\ORTIZ\Desktop\sistema andi\agenda_academica_colegio_v3\imagenes\WhatsApp Image 2026-10-16 at 13.29.33.jpeg" alt="Escudo de la Unidad Educativa" class="escudo-img">
+            </div>
+
+            <div class="encabezado-login">
+                <h2>AGENDA ACADÉMICA DIGITAL</h2>
+                <h3>UNIDAD EDUCATIVA PLENA  <br>"Enrique Sánchez de Lozada"</h3>
+                <p>Agua Castilla - Porco - Potosí | Especialidad: Sistemas Informáticos</p>
+            </div>
+
+            <p class="instruccion-login">Seleccione su tipo de usuario para ingresar al sistema:</p>
+
+            <form id="formularioLogin" onsubmit="iniciarSesion(event)">
+                <div class="grupo-campo">
+                    <label>Tipo de Usuario:</label>
+                    <select id="tipoUsuarioLogin" onchange="verificarTipoLogin()" required>
+                        <option value="padre">Padre / Madre de Familia (Solo lectura y seguimiento)</option>
+                        <option value="estudiante">Estudiante (Solo consulta de tareas y rol de exámenes)</option>
+                        <option value="profesor">Profesor / Docente (Acceso para registrar y publicar)</option>
+                    </select>
+                </div>
+
+                <div class="grupo-campo">
+                    <label id="etiquetaNombreUsuario">Nombre del Padre de Familia o Estudiante:</label>
+                    <input type="text" id="nombreUsuarioLogin" placeholder="Ej. Juan Pérez" required>
+                </div>
+
+                <!-- Campo de contraseña que solo aparece cuando se selecciona Profesor -->
+                <div class="grupo-campo" id="campoPasswordProfesor" style="display: none;">
+                    <label>Contraseña del Docente:</label>
+                    <input type="password" id="passwordProfesor" placeholder="Ingrese su contraseña">
+                    <small class="pista-clave">Clave para la defensa: <strong>profesor123</strong></small>
+                </div>
+
+                <button type="submit" class="boton-ingresar">INGRESAR AL SISTEMA</button>
+            </form>
+
+            <!-- Enlace institucional al final -->
+           
+        </div>
+    </div>
+
+
+    <!-- ==========================================
+         PANTALLA PRINCIPAL DE LA AGENDA
+         ========================================== -->
+    <div id="pantallaPrincipal" style="display: none;">
+
+        <!-- Cabecera Institucional en Verde y Blanco -->
+        <header class="cabecera-colegio">
+            <div class="barra-superior">
+                
+                <div class="bloque-identidad">
+                    <a href="index.html" title="Colegio Enrique Sánchez de Lozada" class="link-escudo">
+                        <img src="c:\Users\ORTIZ\Desktop\sistema andi\agenda_academica_colegio_v3\imagenes\WhatsApp Image 2026-10-16 at 13.29.33.jpeg" alt="Escudo del Colegio" class="escudo-barra">
+                    </a>
+                    <div>
+                        <h1>U.E.P. "ENRIQUE SÁNCHEZ DE LOZADA"</h1>
+                        <p class="lema-colegio">Agua Castilla - Distrito Educativo Porco | BTH Sistemas Informáticos</p>
+                    </div>
+                </div>
+
+                <div class="datos-usuario-sesion">
+                    <span id="textoUsuarioActivo">Usuario: Padre de Familia</span>
+                    <button class="boton-salir" onclick="cerrarSesion()">Salir</button>
+                </div>
+
+            </div>
+        </header>
+
+        <!-- Menú de Navegación (Pestañas en Verde y Blanco) -->
+        <nav class="menu-navegacion">
+            <button class="tab-btn activo" onclick="cambiarPestana('tareas', this)">Tareas y Prácticas</button>
+            <button class="tab-btn" onclick="cambiarPestana('examenes', this)">Exámenes y Evaluaciones</button>
+            <button class="tab-btn" onclick="cambiarPestana('horario', this)">Horario Semanal</button>
+            <button class="tab-btn" onclick="cambiarPestana('comunicados', this)">Comunicados Oficiales</button>
+            <button class="tab-btn" onclick="cambiarPestana('padres', this)">Panel para Padres</button>
+            <button class="tab-btn tab-colegio" onclick="cambiarPestana('infoColegio', this)">Datos del Colegio</button>
+        </nav>
+
+        <!-- Barra de Rol y Estado -->
+        <div class="contenedor-aviso">
+            <div id="cajaAviso" class="aviso-banner">
+                <!-- Se llena con JS según si entró como docente o como padre -->
+            </div>
+        </div>
+
+        <main class="contenedor-cuerpo">
+
+            <!-- 1. SECCIÓN: TAREAS ESCOLARES -->
+            <section id="vista-tareas" class="seccion-bloque activa">
+                <div class="encabezado-seccion">
+                    <h2>TAREAS Y DEBERES ESCOLARES</h2>
+                    <span class="contador" id="numeroPendientes">Total registradas: 0</span>
+                </div>
+
+                <!-- Formulario ÚNICAMENTE visible para el Profesor con Contraseña -->
+                <div id="cajaDocenteTarea" class="bloque-formulario-docente" style="display: none;">
+                    <h3>[PANEL EXCLUSIVO DEL DOCENTE] Registrar Nueva Tarea Escolar</h3>
+                    <form id="formTarea" onsubmit="agregarTarea(event)">
+                        <div class="formulario-cuadricula">
+                            <div>
+                                <label>Materia:</label>
+                                <select id="inputMateriaTarea" required>
+                                    <option value="Matemáticas">Matemáticas</option>
+                                    <option value="Lenguaje y Comunicación">Lenguaje y Comunicación</option>
+                                    <option value="Sistemas Informáticos">Sistemas Informáticos</option>
+                                    <option value="Física - Química">Física - Química</option>
+                                    <option value="Ciencias Sociales">Ciencias Sociales</option>
+                                    <option value="Biología - Geografía">Biología - Geografía</option>
+                                    <option value="Taller BTH">Taller BTH</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Fecha de Entrega:</label>
+                                <input type="date" id="inputFechaTarea" required>
+                            </div>
+                            <div>
+                                <label>Profesor Responsable:</label>
+                                <input type="text" id="inputProfesorTarea" placeholder="Ej. Lic. Betty Apala" required>
+                            </div>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <label>Indicación o Detalle de la Tarea:</label>
+                            <input type="text" id="inputDetalleTarea" placeholder="Ej. Resolver ejercicios 1 al 10 en hojas de carpeta cuadriculada" required style="width: 100%;">
+                        </div>
+                        <button type="submit" class="boton-accion-verde" style="margin-top: 12px;">Publicar Tarea en la Agenda</button>
+                    </form>
+                </div>
+
+                <!-- Filtro para facilitar búsqueda a padres y estudiantes -->
+                <div class="barra-filtro">
+                    <label><strong>Filtrar por Materia:</strong> </label>
+                    <select id="filtroMateria" onchange="dibujarTareas()">
+                        <option value="TODAS">-- Todas las materias --</option>
+                        <option value="Matemáticas">Matemáticas</option>
+                        <option value="Lenguaje y Comunicación">Lenguaje y Comunicación</option>
+                        <option value="Sistemas Informáticos">Sistemas Informáticos</option>
+                        <option value="Física - Química">Física - Química</option>
+                        <option value="Ciencias Sociales">Ciencias Sociales</option>
+                        <option value="Biología - Geografía">Biología - Geografía</option>
+                        <option value="Taller BTH">Taller BTH</option>
+                    </select>
+                </div>
+
+                <div id="contenedorListaTareas" class="cuadricula-tareas">
+                    <!-- Se carga dinámicamente con JavaScript -->
+                </div>
+            </section>
+
+
+            <!-- 2. SECCIÓN: EXÁMENES Y EVALUACIONES -->
+            <section id="vista-examenes" class="seccion-bloque">
+                <div class="encabezado-seccion">
+                    <h2>ROL OFICIAL DE EXÁMENES Y EVALUACIONES</h2>
+                </div>
+
+                <!-- Formulario ÚNICAMENTE visible para el Profesor con Contraseña -->
+                <div id="cajaDocenteExamen" class="bloque-formulario-docente" style="display: none;">
+                    <h3>[PANEL EXCLUSIVO DEL DOCENTE] Programar Nueva Fecha de Examen</h3>
+                    <form id="formExamen" onsubmit="agregarExamen(event)">
+                        <div class="formulario-cuadricula">
+                            <div>
+                                <label>Materia:</label>
+                                <select id="inputMateriaExamen" required>
+                                    <option value="Matemáticas">Matemáticas</option>
+                                    <option value="Lenguaje y Comunicación">Lenguaje y Comunicación</option>
+                                    <option value="Sistemas Informáticos">Sistemas Informáticos</option>
+                                    <option value="Física - Química">Física - Química</option>
+                                    <option value="Ciencias Sociales">Ciencias Sociales</option>
+                                    <option value="Biología - Geografía">Biología - Geografía</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Fecha del Examen:</label>
+                                <input type="date" id="inputFechaExamen" required>
+                            </div>
+                            <div>
+                                <label>Tipo de Evaluación:</label>
+                                <select id="inputTipoExamen" required>
+                                    <option value="Examen Escrito Trimestral">Examen Escrito Trimestral</option>
+                                    <option value="Defensa de Proyecto BTH">Defensa de Proyecto BTH</option>
+                                    <option value="Práctica de Laboratorio">Práctica de Laboratorio</option>
+                                    <option value="Exposición">Exposición</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <label>Temas o Contenido a Estudiar:</label>
+                            <input type="text" id="inputTemasExamen" placeholder="Ej. Temas 1, 2 y 3. Traer calculadora científica y regla." required style="width: 100%;">
+                        </div>
+                        <button type="submit" class="boton-accion-verde" style="margin-top: 12px;">Publicar Fecha de Examen</button>
+                    </form>
+                </div>
+
+                <table class="tabla-escolar">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Materia</th>
+                            <th>Tipo de Evaluación</th>
+                            <th>Temas a Estudiar</th>
+                            <th id="colAccionExamen" style="display: none;">Acción (Docente)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaCuerpoExamenes">
+                        <!-- Filas automáticas -->
+                    </tbody>
+                </table>
+            </section>
+
+
+            <!-- 3. SECCIÓN: HORARIO SEMANAL -->
+            <section id="vista-horario" class="seccion-bloque">
+                <div class="encabezado-seccion">
+                    <h2>HORARIO SEMANAL DE CLASES</h2>
+                </div>
+                <p class="aclaracion">Curso: 6to de Secundaria | Turno Mañana | Especialidad BTH: Sistemas Informáticos</p>
+
+                <table class="tabla-horario">
+                    <thead>
+                        <tr>
+                            <th class="th-hora">Hora</th>
+                            <th>Lunes</th>
+                            <th>Martes</th>
+                            <th>Miércoles</th>
+                            <th>Jueves</th>
+                            <th>Viernes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="td-hora">08:00 - 08:45</td>
+                            <td>Matemáticas</td>
+                            <td>Lenguaje</td>
+                            <td>Física</td>
+                            <td>Ciencias Sociales</td>
+                            <td class="celda-bth">Sistemas Informáticos</td>
+                        </tr>
+                        <tr>
+                            <td class="td-hora">08:45 - 09:30</td>
+                            <td>Matemáticas</td>
+                            <td>Lenguaje</td>
+                            <td>Física</td>
+                            <td>Ciencias Sociales</td>
+                            <td class="celda-bth">Sistemas Informáticos</td>
+                        </tr>
+                        <tr class="fila-recreo">
+                            <td colspan="6">09:30 - 09:50 | DESCANSO Y RECREO</td>
+                        </tr>
+                        <tr>
+                            <td class="td-hora">09:50 - 10:35</td>
+                            <td>Química</td>
+                            <td>Biología</td>
+                            <td>Matemáticas</td>
+                            <td>Lenguaje</td>
+                            <td class="celda-bth">Sistemas Informáticos</td>
+                        </tr>
+                        <tr>
+                            <td class="td-hora">10:35 - 11:20</td>
+                            <td>Química</td>
+                            <td>Biología</td>
+                            <td>Valores y Religión</td>
+                            <td>Lenguaje</td>
+                            <td class="celda-bth">Sistemas Informáticos</td>
+                        </tr>
+                        <tr>
+                            <td class="td-hora">11:20 - 12:05</td>
+                            <td>Filosofía</td>
+                            <td>Ciencias Sociales</td>
+                            <td>Educación Física</td>
+                            <td>Artes Plásticas</td>
+                            <td class="celda-bth">Taller BTH Proyecto</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+
+            <!-- 4. SECCIÓN: COMUNICADOS OFICIALES -->
+            <section id="vista-comunicados" class="seccion-bloque">
+                <div class="encabezado-seccion">
+                    <h2>COMUNICADOS Y CITACIONES DE LA DIRECCIÓN / DOCENTES</h2>
+                </div>
+
+                <!-- Formulario ÚNICAMENTE visible para el Docente con Contraseña -->
+                <div id="cajaDocenteComunicado" class="bloque-formulario-docente" style="display: none;">
+                    <h3>[PANEL EXCLUSIVO DEL DOCENTE] Redactar Comunicado Oficial</h3>
+                    <form id="formComunicado" onsubmit="agregarComunicado(event)">
+                        <div class="formulario-cuadricula">
+                            <div>
+                                <label>Título del Comunicado:</label>
+                                <input type="text" id="inputTituloCom" placeholder="Ej. Citación a Reunión de Padres" required>
+                            </div>
+                            <div>
+                                <label>Fecha:</label>
+                                <input type="date" id="inputFechaCom" required>
+                            </div>
+                            <div>
+                                <label>Emitido por:</label>
+                                <input type="text" id="inputFirmaCom" placeholder="Ej. Dirección / Tutor 6to Sec." required>
+                            </div>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <label>Texto del Comunicado:</label>
+                            <textarea id="inputMensajeCom" rows="3" placeholder="Escriba aquí la citación o comunicado..." required style="width: 100%;"></textarea>
+                        </div>
+                        <button type="submit" class="boton-accion-verde" style="margin-top: 12px;">Publicar Comunicado</button>
+                    </form>
+                </div>
+
+                <div id="contenedorComunicados" class="lista-comunicados">
+                    <!-- Se llena con JS -->
+                </div>
+            </section>
+
+
+            <!-- 5. SECCIÓN: PANEL PARA PADRES DE FAMILIA -->
+            <section id="vista-padres" class="seccion-bloque">
+                <div class="encabezado-seccion">
+                    <h2>SEGUIMIENTO Y CONTROL PARA PADRES DE FAMILIA</h2>
+                </div>
+                <p class="aclaracion">Estimado padre o madre de familia: Aquí puede verificar de un solo vistazo las actividades vigentes para apoyar a su hijo/a en sus deberes escolares.</p>
+
+                <div class="resumen-padres-tarjetas">
+                    <div class="tarjeta-resumen verde">
+                        <h4>Total de Tareas Asignadas</h4>
+                        <p class="cifra" id="resumenTotalTareas">0</p>
+                        <span>Registradas por los profesores</span>
+                    </div>
+                    <div class="tarjeta-resumen verde-oscuro">
+                        <h4>Próximos Exámenes</h4>
+                        <p class="cifra" id="resumenTotalExamenes">0</p>
+                        <span>Fechas de evaluación programadas</span>
+                    </div>
+                    <div class="tarjeta-resumen blanco-borde">
+                        <h4>Comunicados Emitidos</h4>
+                        <p class="cifra" id="resumenTotalComunicados" style="color: #1b5e20;">0</p>
+                        <span>Avisos de dirección y tutores</span>
+                    </div>
+                </div>
+
+                <div class="recuadro-atencion-padres">
+                    <h3>Lista de Trabajos y Tareas Vigentes:</h3>
+                    <div id="listaTareasPadres">
+                        <!-- JS llena la lista -->
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- 6. SECCIÓN: DATOS DEL COLEGIO Y ENLACES INSTITUCIONALES -->
+            <section id="vista-infoColegio" class="seccion-bloque">
+                <div class="encabezado-seccion">
+                    <h2>INFORMACIÓN INSTITUCIONAL DE LA UNIDAD EDUCATIVA</h2>
+                </div>
+
+                <div class="ficha-colegio">
+                    <div class="ficha-escudo">
+                        <img src="c:\Users\ORTIZ\Desktop\sistema andi\agenda_academica_colegio_v3\imagenes\WhatsApp Image 2026-10-16 at 13.29.33.jpeg" alt="Escudo de la Unidad Educativa" class="escudo-grande">
+                        <p class="pie-escudo">Escudo Oficial de la U.E.</p>
+                    </div>
+                    <div class="ficha-datos">
+                        <h3>Unidad Educativa Plena "Enrique Sánchez de Lozada"</h3>
+                        <p><strong>Comunidad / Localidad:</strong> Agua Castilla</p>
+                        <p><strong>Distrito Educativo:</strong> Porco</p>
+                        <p><strong>Departamento:</strong> Potosí - Estado Plurinacional de Bolivia</p>
+                        <p><strong>Nivel:</strong> Secundario Comunitario Productivo</p>
+                        <p><strong>Especialidad BTH:</strong> Sistemas Informáticos (Resolución Ministerial)</p>
+                        <p><strong>Colores Representativos:</strong> Verde y Blanco</p>
+                        
+                        <div class="enlaces-utiles-colegio">
+                            <h4>Enlaces Oficiales y de Consulta:</h4>
+                            <ul>
+                                <li><a href="https://bolivia.minedu.gob.bo/" target="_blank">🔗 Portal del Ministerio de Educación del Estado Plurinacional</a></li>
+                                <li><a href="https://siged.sie.gob.bo/" target="_blank">🔗 Sistema de Información Educativa (SIE / SIGED)</a></li>
+                                <li><a href="#" onclick="alert('Aquí puede colocar el enlace a la página de Facebook o WhatsApp del Colegio.')">🔗 Red Social / Página de la Unidad Educativa</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Pie de Página Institucional en Verde y Blanco -->
+        <footer class="pie-colegio">
+            <p><strong>Unidad Educativa Plena  "Enrique Sánchez de Lozada"</strong></p>
+            <p>Agua Castilla - Distrito Educativo Porco - Potosí | Colores: Verde y Blanco</p>
+            <p>Proyecto de Grado BTH 2026: <em>Andy Dauser Ortiz Ecos y Rayner Gallardo Rodríguez</em></p>
+        </footer>
+
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
