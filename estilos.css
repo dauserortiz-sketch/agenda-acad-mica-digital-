@@ -43,9 +43,9 @@ body {
 }
 
 .escudo-img {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    border-radius: 25%;
     border: 2px solid #1b5e20;
     object-fit: cover;
     background-color: #e8f5e9;
