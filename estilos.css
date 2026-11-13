@@ -745,4 +745,11 @@ body {
     .tab-colegio {
         margin-left: 0;
     }
+   .logo {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    display: block;
+    margin: 10px auto;
+}
 }
